@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch Ad</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Adsgram SDK -->
+    <script src="https://adsgram.ai/js/adsgram.js?blockId=YOUR_BLOCK_ID"></script> 
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: var(--tg-theme-bg-color, #fff);
+            color: var(--tg-theme-text-color, #000);
+            margin: 0;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #fff);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <button id="ad-btn">Watch Ad to Get Audio</button>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // Replace with your actual Block ID or inject via backend
+        const AdController = window.Adsgram.init({ blockId: "YOUR_BLOCK_ID" });
+
+        document.getElementById('ad-btn').addEventListener('click', () => {
+            AdController.show().then((result) => {
+                // User watched the ad
+                tg.sendData("success");
+                tg.close();
+            }).catch((result) => {
+                // User skipped or error
+                // tg.sendData("failed"); // Optional: handle failure
+                // tg.close();
+                alert("Please watch the ad to continue.");
+            });
+        });
+    </script>
+</body>
+</html>
