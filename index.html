@@ -1,56 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watch Ad</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <!-- Adsgram SDK -->
-    <script src="https://adsgram.ai/js/adsgram.js?blockId=19674"></script> 
+    <script src="https://adsgram.ai/js/adsgram.js?blockId=19674"></script>
     <style>
-        body {
-            font-family: sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: var(--tg-theme-bg-color, #fff);
-            color: var(--tg-theme-text-color, #000);
-            margin: 0;
+        :root {
+            --primary: #3390ec;
+            --bg: var(--tg-theme-bg-color, #f4f7f9);
+            --text: var(--tg-theme-text-color, #222);
+            --hint: var(--tg-theme-hint-color, #707579);
+            --card: var(--tg-theme-secondary-bg-color, #ffffff);
         }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .logo {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 22px;
+            margin: 0 0 8px 0;
+        }
+
+        p {
+            color: var(--hint);
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .preview-box {
+            background: var(--bg);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: left;
+            margin-bottom: 24px;
+            min-height: 60px;
+        }
+
+        .preview-label {
+            font-size: 12px;
+            color: var(--hint);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        #text-preview {
+            font-size: 16px;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
         button {
-            padding: 15px 30px;
-            font-size: 18px;
-            background-color: var(--tg-theme-button-color, #3390ec);
-            color: var(--tg-theme-button-text-color, #fff);
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            background-color: var(--primary);
+            color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        #status {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            display: none;
         }
     </style>
 </head>
+
 <body>
-    <button id="ad-btn">Watch Ad to Get Audio</button>
+    <div class="container">
+        <div class="logo">🎙️</div>
+        <h1>Lahajati Studio</h1>
+        <p>Algerian Darija Text-to-Speech</p>
+
+        <div class="preview-box">
+            <span class="preview-label">Text Preview</span>
+            <div id="text-preview">Loading...</div>
+        </div>
+
+        <button id="ad-btn">Generate Voice Note</button>
+
+        <div id="status">
+            ✅ Audio is being generated! Check your Telegram chat.
+        </div>
+    </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+        tg.ready();
 
-        // Replace with your actual Block ID or inject via backend
+        // Get text from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const userText = urlParams.get('text') || "No text provided";
+        document.getElementById('text-preview').innerText = userText;
+
         const AdController = window.Adsgram.init({ blockId: "YOUR_BLOCK_ID" });
 
         document.getElementById('ad-btn').addEventListener('click', () => {
             AdController.show().then((result) => {
-                // User watched the ad
-                tg.sendData("success");
-                tg.close();
+                document.getElementById('ad-btn').style.display = 'none';
+                document.getElementById('status').style.display = 'block';
+                setTimeout(() => {
+                    tg.close();
+                }, 3000);
             }).catch((result) => {
-                // User skipped or error
-                // tg.sendData("failed"); // Optional: handle failure
-                // tg.close();
-                alert("Please watch the ad to continue.");
+                alert("To generate the high-quality voice note, please view the short sponsor message.");
             });
         });
     </script>
 </body>
+
 </html>
