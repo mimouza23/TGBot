@@ -461,7 +461,21 @@
                 const data = await response.json();
                 const audioUrl = data.url;
 
-                audioPlayer.src = audioUrl;
+                // Fetch audio as blob to bypass ngrok warning
+                try {
+                    const audioRes = await fetch(audioUrl, {
+                        headers: {
+                            'ngrok-skip-browser-warning': 'true'
+                        }
+                    });
+                    const audioBlob = await audioRes.blob();
+                    const blobUrl = URL.createObjectURL(audioBlob);
+                    audioPlayer.src = blobUrl;
+                } catch (e) {
+                    console.error("Blob fetch failed, falling back to direct URL", e);
+                    audioPlayer.src = audioUrl;
+                }
+
                 audioPlayer.load(); // Force the player to load the new source
 
                 // Update download button to use Telegram's openLink
