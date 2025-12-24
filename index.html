@@ -21,10 +21,12 @@
         body {
             width: 100%;
             height: 100%;
-            overflow: hidden;
+            overflow-y: auto;
+            /* Enable scrolling */
             font-family: 'Outfit', sans-serif;
             background: linear-gradient(135deg, #1a1a1d 0%, #2d2d32 25%, #1f1f23 50%, #2a2a2e 75%, #161618 100%);
             color: white;
+            -webkit-overflow-scrolling: touch;
         }
 
         .background-container {
@@ -123,22 +125,25 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
+            /* Start from top for scrolling */
             min-height: 100vh;
-            padding: 20px;
+            padding: 40px 20px;
         }
 
         .glass-panel {
-            background: rgba(20, 20, 25, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(20, 20, 25, 0.4);
+            /* More transparent */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 24px;
             padding: 30px;
             width: 100%;
             max-width: 450px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             text-align: center;
+            margin-bottom: 40px;
         }
 
         h1 {
@@ -389,6 +394,7 @@
         // Pre-fill text from URL if provided
         const urlParams = new URLSearchParams(window.location.search);
         const initialText = urlParams.get('text');
+        const userId = urlParams.get('userid'); // Get user ID from Telegram
         if (initialText) {
             document.getElementById('user-text').value = decodeURIComponent(initialText);
         }
@@ -442,7 +448,8 @@
                     },
                     body: JSON.stringify({
                         text: text,
-                        voice_id: document.getElementById('voice-select').value
+                        voice_id: document.getElementById('voice-select').value,
+                        user_id: userId // Pass user ID to bot
                     })
                 });
 
