@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DarjaDZ-TTS-Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://adsgram.ai/js/adsgram.js?blockId=18472"></script>
+    <script src="https://adsgram.ai/js/adsgram.js?blockId=19727"></script>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Outfit:wght@300;500;700&display=swap"
         rel="stylesheet">
     <style>
@@ -147,6 +147,7 @@
             font-weight: 700;
             background: linear-gradient(45deg, #e8c170, #ffffff);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 5px;
             letter-spacing: 1px;
@@ -382,6 +383,13 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
+        // Pre-fill text from URL if provided
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialText = urlParams.get('text');
+        if (initialText) {
+            document.getElementById('user-text').value = decodeURIComponent(initialText);
+        }
+
         // Generate Sand Particles
         const sandContainer = document.querySelector('.sand-container');
         for (let i = 0; i < 20; i++) {
@@ -404,7 +412,7 @@
         const userTextInput = document.getElementById('user-text');
 
         // CONFIGURATION
-        const ADSGRAM_BLOCK_ID = "18472"; // Update this!
+        const ADSGRAM_BLOCK_ID = "19727"; // Update this!
         // IMPORTANT: Replace with your actual Bot URL (e.g., https://myapp.ngrok-free.app)
         // If running locally with no tunnel, this won't work from Netlify.
         const BACKEND_URL = "https://fcf7941807c8.ngrok-free.app";
