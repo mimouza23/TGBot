@@ -498,16 +498,20 @@
         });
 
         testBtn.addEventListener('click', async () => {
-            alert("Testing connection to: " + BACKEND_URL);
+            alert("Testing connection to: " + BACKEND_URL + "/ping");
             try {
-                const res = await fetch(BACKEND_URL + "/generate", {
-                    method: 'POST',
-                    headers: { 'ngrok-skip-browser-warning': 'true', 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text: "test" })
+                const res = await fetch(BACKEND_URL + "/ping", {
+                    method: 'GET',
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
                 });
-                alert("Connection Success! Status: " + res.status);
+                const text = await res.text();
+                if (text === "pong") {
+                    alert("✅ Connection Success! Bot responded with: " + text);
+                } else {
+                    alert("❓ Connected, but got weird response: " + text);
+                }
             } catch (e) {
-                alert("Connection Failed: " + e.message);
+                alert("❌ Connection Failed: " + e.message);
             }
         });
 
