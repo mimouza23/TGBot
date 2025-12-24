@@ -436,7 +436,10 @@
             try {
                 const response = await fetch(`${BACKEND_URL}/generate`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true' // Bypass ngrok warning page
+                    },
                     body: JSON.stringify({
                         text: text,
                         voice_id: document.getElementById('voice-select').value
@@ -488,7 +491,7 @@
             }).catch((result) => {
                 // Ad failed or skipped
                 alert("Ad failed/skipped. Generating anyway...");
-                // For better UX during dev/testing, we allow generation. 
+                // For better UX during dev/testing, we allow generation.
                 // In production, you might want to block it.
                 generateAudio(text);
             });
@@ -497,7 +500,11 @@
         testBtn.addEventListener('click', async () => {
             alert("Testing connection to: " + BACKEND_URL);
             try {
-                const res = await fetch(BACKEND_URL + "/generate", { method: 'OPTIONS' });
+                const res = await fetch(BACKEND_URL + "/generate", {
+                    method: 'POST',
+                    headers: { 'ngrok-skip-browser-warning': 'true', 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: "test" })
+                });
                 alert("Connection Success! Status: " + res.status);
             } catch (e) {
                 alert("Connection Failed: " + e.message);
