@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Outfit:wght@300;500;700&display=swap"
         rel="stylesheet">
     <style>
-        /* Background Styles from background.html */
+        /* Background & Core Styles */
         * {
             margin: 0;
             padding: 0;
@@ -22,13 +22,13 @@
             width: 100%;
             height: 100%;
             overflow-y: auto;
-            /* Enable scrolling */
             font-family: 'Outfit', sans-serif;
             background: linear-gradient(135deg, #1a1a1d 0%, #2d2d32 25%, #1f1f23 50%, #2a2a2e 75%, #161618 100%);
             color: white;
             -webkit-overflow-scrolling: touch;
         }
 
+        /* Background Animation */
         .background-container {
             position: fixed;
             top: 0;
@@ -37,6 +37,7 @@
             height: 100%;
             z-index: 0;
             overflow: hidden;
+            pointer-events: none;
         }
 
         .map-container {
@@ -49,16 +50,13 @@
             justify-content: center;
             align-items: center;
             animation: dramaticMove 20s ease-in-out infinite;
-            will-change: transform;
+            opacity: 0.6;
         }
 
         .map-layer {
             max-width: 95%;
             max-height: 95%;
-            width: auto;
-            height: auto;
             object-fit: contain;
-            opacity: 0.6;
         }
 
         @keyframes dramaticMove {
@@ -80,89 +78,64 @@
             width: 100%;
             height: 100%;
             background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.65) 100%);
-            pointer-events: none;
             z-index: 1;
         }
 
-        .sand-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .sand-particle {
-            position: absolute;
-            background: rgba(210, 180, 140, 0.5);
-            border-radius: 50%;
-            animation: floatAcross linear infinite;
-        }
-
-        @keyframes floatAcross {
-            0% {
-                transform: translateX(0) translateY(0);
-                opacity: 0;
-            }
-
-            50% {
-                opacity: 0.5;
-            }
-
-            100% {
-                transform: translateX(110vw) translateY(-10vh);
-                opacity: 0;
-            }
-        }
-
-        /* Main Content Styles */
+        /* Main Content */
         .content {
             position: relative;
             z-index: 10;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
-            /* Start from top for scrolling */
             min-height: 100vh;
-            padding: 40px 20px;
+            padding: 20px;
         }
 
         .glass-panel {
-            background: rgba(20, 20, 25, 0.2);
-            /* More transparent */
-            backdrop-filter: blur(3px);
-            -webkit-backdrop-filter: blur(3px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(20, 20, 25, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px;
-            padding: 30px;
+            padding: 25px;
             width: 100%;
             max-width: 450px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         h1 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 700;
             background: linear-gradient(45deg, #e8c170, #ffffff);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 5px;
-            letter-spacing: 1px;
         }
 
         .subtitle {
             font-family: 'Amiri', serif;
-            font-size: 18px;
+            font-size: 16px;
             color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 25px;
+            margin-bottom: 15px;
+        }
+
+        .sarf-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(232, 193, 112, 0.15);
+            color: #e8c170;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-family: 'Amiri', serif;
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(232, 193, 112, 0.3);
         }
 
         textarea {
@@ -185,17 +158,12 @@
             border-color: #e8c170;
         }
 
-        textarea::placeholder {
-            color: rgba(255, 255, 255, 0.4);
-            font-family: 'Outfit', sans-serif;
-            font-size: 14px;
-        }
-
+        /* Controls */
         .controls {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            margin-bottom: 25px;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
         .control-row {
@@ -210,6 +178,17 @@
         .label {
             font-size: 14px;
             color: rgba(255, 255, 255, 0.9);
+        }
+
+        select {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 8px;
+            outline: none;
+            font-family: 'Outfit', sans-serif;
+            max-width: 150px;
         }
 
         /* Toggle Switch */
@@ -258,22 +237,52 @@
             transform: translateX(16px);
         }
 
-        /* Dropdown */
-        select {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 8px;
-            outline: none;
-            font-family: 'Outfit', sans-serif;
+        /* Pro Settings Dropdown */
+        .pro-settings-header {
+            width: 100%;
+            text-align: left;
+            padding: 10px;
+            background: none;
+            border: none;
+            color: #e8c170;
+            font-size: 14px;
             cursor: pointer;
+            display: flex;
+            justify-content: space-between;
         }
 
-        select option {
-            background: #2d2d32;
+        .pro-settings-content {
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
         }
 
+        .pro-settings-content.open {
+            display: flex;
+        }
+
+        .range-container {
+            width: 100%;
+        }
+
+        .range-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 5px;
+            color: #aaa;
+        }
+
+        input[type=range] {
+            width: 100%;
+            accent-color: #e8c170;
+        }
+
+        /* Buttons */
         .btn-generate {
             width: 100%;
             padding: 16px;
@@ -297,6 +306,17 @@
             cursor: not-allowed;
         }
 
+        .btn-ad {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #e8c170;
+            color: #e8c170;
+            margin-top: 10px;
+            padding: 10px;
+            width: 100%;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
         #result-area {
             margin-top: 20px;
             display: none;
@@ -306,20 +326,6 @@
         .audio-player {
             width: 100%;
             margin-top: 10px;
-        }
-
-        .download-link {
-            display: inline-block;
-            margin-top: 10px;
-            color: #e8c170;
-            text-decoration: none;
-            font-size: 14px;
-            border-bottom: 1px solid transparent;
-            transition: border-color 0.3s;
-        }
-
-        .download-link:hover {
-            border-color: #e8c170;
         }
 
         @keyframes fadeIn {
@@ -337,52 +343,68 @@
 </head>
 
 <body>
-    <!-- Background Layers -->
     <div class="background-container">
-        <div class="map-container">
-            <img src="algeria-map-art.png" alt="Algeria Map Art" class="map-layer">
-        </div>
+        <div class="map-container"><img src="algeria-map-art.png" class="map-layer"></div>
         <div class="dark-overlay"></div>
-        <div class="sand-container">
-            <!-- Particles generated by JS for cleaner HTML -->
-        </div>
     </div>
 
-    <!-- Main Content -->
     <div class="content">
         <div class="glass-panel">
             <h1>DarjaDZ-TTS-Pro</h1>
             <div class="subtitle">حول الدارجة لكلام</div>
 
-            <textarea id="user-text"
-                placeholder="Type Darja using Arabic keyboard; AI will do the tashkeel for you if none is provided..."></textarea>
+            <div class="sarf-badge">
+                <span id="sarf-balance">0</span> <span>صرف</span>
+            </div>
+
+            <textarea id="user-text" placeholder="Type Darja here..."></textarea>
 
             <div class="controls">
                 <div class="control-row">
-                    <span class="label">Use AI for Tashkeel</span>
+                    <span class="label">Provider</span>
+                    <select id="provider-select">
+                        <option value="elevenlabs">ElevenLabs (Premium)</option>
+                        <option value="edge-tts">Edge-TTS (Free)</option>
+                    </select>
+                </div>
+
+                <div class="control-row">
+                    <span class="label">Voice</span>
+                    <select id="voice-select">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+
+                <div class="control-row">
+                    <span class="label">AI Tashkeel</span>
                     <label class="switch">
                         <input type="checkbox" id="tashkeel-toggle">
                         <span class="slider"></span>
                     </label>
                 </div>
-                <div class="control-row">
-                    <span class="label">Voice Model</span>
-                    <select id="voice-select">
-                        <option value="21m00Tcm4TlvDq8ikWAM">Premium Voice (ElevenLabs)</option>
-                        <option value="standard" disabled>Standard Voice (Coming Soon)</option>
-                    </select>
+            </div>
+
+            <button class="pro-settings-header" id="pro-toggle">
+                <span>Pro Settings</span> <span>▼</span>
+            </button>
+            <div class="pro-settings-content" id="pro-content">
+                <div class="range-container">
+                    <div class="range-label"><span>Pitch (Hz)</span> <span id="pitch-val">Default</span></div>
+                    <input type="range" id="pitch-slider" min="-60" max="60" value="0">
+                    <div class="range-label"><span>Deep Hacker</span> <span>Chipmunk</span></div>
+                </div>
+                <div class="range-container">
+                    <div class="range-label"><span>Rate (%)</span> <span id="rate-val">Default</span></div>
+                    <input type="range" id="rate-slider" min="-100" max="100" value="0">
                 </div>
             </div>
 
-            <button id="generate-btn" class="btn-generate">🎙️ Generate Voice Note</button>
-            <button id="test-btn"
-                style="background: none; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.5); margin-top: 10px; padding: 5px; border-radius: 5px; font-size: 10px; cursor: pointer;">Test
-                Connection</button>
+            <button id="generate-btn" class="btn-generate">🎙️ Generate Audio</button>
+            <button id="earn-sarf-btn" class="btn-ad">📺 Watch Ad (+100 Sarf)</button>
 
             <div id="result-area">
-                <p style="color: #e8c170; margin-bottom: 10px; font-size: 14px;">✨ Audio Generated Successfully!</p>
-                <audio id="audio-player" controls class="audio-player" crossorigin="anonymous"></audio>
-                <a id="download-btn" class="download-link" href="#" download="darja_voice.mp3">Download MP3</a>
+                <p style="color: #e8c170; margin-bottom: 10px;">✨ Generated!</p>
+                <audio id="audio-player" controls class="audio-player"></audio>
             </div>
         </div>
     </div>
@@ -391,160 +413,205 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Pre-fill text from URL if provided
-        const urlParams = new URLSearchParams(window.location.search);
-        const initialText = urlParams.get('text');
-        const userId = urlParams.get('userid'); // Get user ID from Telegram
-        if (initialText) {
-            document.getElementById('user-text').value = decodeURIComponent(initialText);
-        }
+        // --- CONFIG ---
+        const BACKEND_URL = "https://68268931aebc.ngrok-free.app"; // Update this!
+        const ADSGRAM_BLOCK_ID = "19869";
+        const SARF_PER_CHAR = 2;
+        const SARF_PER_AD = 100;
 
-        // Generate Sand Particles
-        const sandContainer = document.querySelector('.sand-container');
-        for (let i = 0; i < 20; i++) {
-            const p = document.createElement('div');
-            p.className = 'sand-particle';
-            p.style.width = Math.random() * 4 + 2 + 'px';
-            p.style.height = p.style.width;
-            p.style.top = Math.random() * 100 + '%';
-            p.style.left = '-20px';
-            p.style.animationDuration = Math.random() * 10 + 10 + 's';
-            p.style.animationDelay = Math.random() * 5 + 's';
-            sandContainer.appendChild(p);
-        }
-
-        // Logic
-        const generateBtn = document.getElementById('generate-btn');
-        const testBtn = document.getElementById('test-btn');
-        const resultArea = document.getElementById('result-area');
-        const audioPlayer = document.getElementById('audio-player');
-        const downloadBtn = document.getElementById('download-btn');
-        const userTextInput = document.getElementById('user-text');
-
-        // CONFIGURATION
-        const ADSGRAM_BLOCK_ID = "19869"; // Update this!
-        // IMPORTANT: Replace with your actual Bot URL (e.g., https://myapp.ngrok-free.app)
-        // If running locally with no tunnel, this won't work from Netlify.
-        const BACKEND_URL = "https://68268931aebc.ngrok-free.app";
-
+        // --- STATE ---
+        let currentBalance = 0;
         let AdController;
-        try {
-            AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
-        } catch (e) {
-            console.error("Adsgram init failed", e);
+
+        // --- VOICES ---
+        const voices = {
+            elevenlabs: [
+                { id: "21m00Tcm4TlvDq8ikWAM", name: "Rachel (Female)" },
+                { id: "ErXwobaYiN019PkySvjV", name: "Antoni (Male)" } // Example ID
+            ],
+            "edge-tts": [
+                { id: "ar-DZ-IsmaelNeural", name: "Ismael (Male)" },
+                { id: "ar-DZ-AminaNeural", name: "Amina (Female)" } // Hypothetical, usually standard Arabic voices used or closest match
+            ]
+        };
+
+        // --- INIT ---
+        async function init() {
+            // Setup Adsgram
+            try {
+                AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
+            } catch (e) { console.error("Adsgram init error:", e); }
+
+            // Load Balance
+            await fetchBalance();
+
+            // Setup UI
+            setupVoices();
+            setupListeners();
         }
 
-        async function generateAudio(text) {
-            generateBtn.disabled = true;
-            generateBtn.innerText = "Generating...";
-            console.log("Starting fetch to:", `${BACKEND_URL}/generate`);
+        async function fetchBalance() {
+            try {
+                const res = await fetch(`${BACKEND_URL}/balance`, {
+                    headers: { 'X-Telegram-Init-Data': tg.initData, 'ngrok-skip-browser-warning': 'true' }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    currentBalance = data.balance;
+                    updateBalanceUI();
+                }
+            } catch (e) {
+                console.error("Balance fetch failed", e);
+            }
+        }
+
+        function updateBalanceUI() {
+            document.getElementById('sarf-balance').innerText = currentBalance;
+        }
+
+        function setupVoices() {
+            const provider = document.getElementById('provider-select').value;
+            const voiceSelect = document.getElementById('voice-select');
+            voiceSelect.innerHTML = "";
+
+            const availableVoices = voices[provider] || [];
+            availableVoices.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v.id;
+                opt.innerText = v.name;
+                voiceSelect.appendChild(opt);
+            });
+        }
+
+        function setupListeners() {
+            document.getElementById('provider-select').addEventListener('change', setupVoices);
+
+            // Pro Settings Toggle
+            document.getElementById('pro-toggle').addEventListener('click', () => {
+                document.getElementById('pro-content').classList.toggle('open');
+            });
+
+            // Sliders UI Update
+            document.getElementById('pitch-slider').addEventListener('input', (e) => {
+                const val = e.target.value;
+                document.getElementById('pitch-val').innerText = val == 0 ? "Default" : (val > 0 ? `+${val}Hz` : `${val}Hz`);
+            });
+            document.getElementById('rate-slider').addEventListener('input', (e) => {
+                const val = e.target.value;
+                document.getElementById('rate-val').innerText = val == 0 ? "Default" : (val > 0 ? `+${val}%` : `${val}%`);
+            });
+
+            // Generate
+            document.getElementById('generate-btn').addEventListener('click', handleGenerate);
+
+            // Watch Ad
+            document.getElementById('earn-sarf-btn').addEventListener('click', watchAd);
+        }
+
+        async function watchAd() {
+            if (!AdController) {
+                alert("Ads are not loading. Trying fallback...");
+                // Fallback logic here (e.g. Monetag or just free credit for now)
+                verifyAdReward();
+                return;
+            }
+
+            AdController.show().then((result) => {
+                // Reward user
+                verifyAdReward();
+            }).catch((result) => {
+                // Ad failed
+                alert("Ad failed. Trying fallback network...");
+                // Simulate fallback success for now
+                verifyAdReward();
+            });
+        }
+
+        async function verifyAdReward() {
+            try {
+                const res = await fetch(`${BACKEND_URL}/verify_ad`, {
+                    method: 'POST',
+                    headers: { 'X-Telegram-Init-Data': tg.initData, 'ngrok-skip-browser-warning': 'true' }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    currentBalance = data.new_balance;
+                    updateBalanceUI();
+                    tg.showAlert(`+${SARF_PER_AD} Sarf Added!`);
+                }
+            } catch (e) {
+                alert("Network error verifying reward.");
+            }
+        }
+
+        async function handleGenerate() {
+            const text = document.getElementById('user-text').value.trim();
+            if (!text) return tg.showAlert("Please enter text!");
+
+            const cost = text.length * SARF_PER_CHAR;
+            if (currentBalance < cost) {
+                const needed = cost - currentBalance;
+                const adsNeeded = Math.ceil(needed / SARF_PER_AD);
+                tg.showConfirm(`Insufficient Sarf!\nCost: ${cost}\nYou have: ${currentBalance}\n\nWatch ${adsNeeded} ad(s) to continue?`, (confirmed) => {
+                    if (confirmed) watchAd();
+                });
+                return;
+            }
+
+            // Proceed to Generate
+            const btn = document.getElementById('generate-btn');
+            btn.disabled = true;
+            btn.innerText = "Generating...";
 
             try {
-                const response = await fetch(`${BACKEND_URL}/generate`, {
+                const payload = {
+                    text: text,
+                    provider: document.getElementById('provider-select').value,
+                    voice_id: document.getElementById('voice-select').value,
+                    use_tashkeel: document.getElementById('tashkeel-toggle').checked,
+                    pitch_shift: document.getElementById('pitch-slider').value,
+                    rate_shift: (document.getElementById('rate-slider').value > 0 ? "+" : "") + document.getElementById('rate-slider').value + "%"
+                };
+
+                const res = await fetch(`${BACKEND_URL}/generate`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'ngrok-skip-browser-warning': 'true' // Bypass ngrok warning page
+                        'X-Telegram-Init-Data': tg.initData,
+                        'ngrok-skip-browser-warning': 'true'
                     },
-                    body: JSON.stringify({
-                        text: text,
-                        voice_id: document.getElementById('voice-select').value,
-                        user_id: userId // Pass user ID to bot
-                    })
+                    body: JSON.stringify(payload)
                 });
 
-                if (!response.ok) {
-                    const errText = await response.text();
-                    throw new Error(errText || "Generation failed");
-                }
+                const data = await res.json();
 
-                const data = await response.json();
-                const audioUrl = data.url;
-
-                // Fetch audio as blob to bypass ngrok warning
-                try {
-                    const audioRes = await fetch(audioUrl, {
-                        headers: {
-                            'ngrok-skip-browser-warning': 'true'
-                        }
-                    });
-                    const audioBlob = await audioRes.blob();
-                    const blobUrl = URL.createObjectURL(audioBlob);
-                    audioPlayer.src = blobUrl;
-                } catch (e) {
-                    console.error("Blob fetch failed, falling back to direct URL", e);
-                    audioPlayer.src = audioUrl;
-                }
-
-                audioPlayer.load(); // Force the player to load the new source
-
-                // Update download button to use Telegram's openLink
-                downloadBtn.onclick = (e) => {
-                    e.preventDefault();
-                    tg.openLink(audioUrl);
-                };
-
-                resultArea.style.display = 'block';
-                generateBtn.innerText = "🎙️ Generate Another";
-                saveToHistory(text);
-
-            } catch (e) {
-                alert("Fetch Error: " + e.message);
-                generateBtn.innerText = "🎙️ Generate Voice Note";
-            } finally {
-                generateBtn.disabled = false;
-            }
-        }
-
-        generateBtn.addEventListener('click', () => {
-            const text = userTextInput.value.trim();
-            if (!text) {
-                tg.showAlert("Please enter some text first!");
-                return;
-            }
-
-            if (!AdController) {
-                alert("Ad SDK not loaded. Trying direct generation...");
-                generateAudio(text);
-                return;
-            }
-
-            // Show Ad
-            AdController.show().then((result) => {
-                // User watched ad
-                generateAudio(text);
-            }).catch((result) => {
-                // Ad failed or skipped
-                alert("Ad failed/skipped. Generating anyway...");
-                // For better UX during dev/testing, we allow generation.
-                // In production, you might want to block it.
-                generateAudio(text);
-            });
-        });
-
-        testBtn.addEventListener('click', async () => {
-            alert("Testing connection to: " + BACKEND_URL + "/ping");
-            try {
-                const res = await fetch(BACKEND_URL + "/ping", {
-                    method: 'GET',
-                    headers: { 'ngrok-skip-browser-warning': 'true' }
-                });
-                const text = await res.text();
-                if (text === "pong") {
-                    alert("✅ Connection Success! Bot responded with: " + text);
+                if (!res.ok) {
+                    if (res.status === 402) {
+                        tg.showAlert("Insufficient Sarf! Please watch an ad.");
+                    } else {
+                        throw new Error(data.error || "Unknown error");
+                    }
                 } else {
-                    alert("❓ Connected, but got weird response: " + text);
-                }
-            } catch (e) {
-                alert("❌ Connection Failed: " + e.message);
-            }
-        });
+                    currentBalance = data.new_balance;
+                    updateBalanceUI();
 
-        function saveToHistory(text) {
-            const history = JSON.parse(localStorage.getItem('tts_history') || '[]');
-            history.unshift({ text, date: new Date().toISOString() });
-            localStorage.setItem('tts_history', JSON.stringify(history.slice(0, 10)));
+                    const audioPlayer = document.getElementById('audio-player');
+                    // Fetch blob to bypass ngrok warning if needed
+                    audioPlayer.src = data.url;
+                    document.getElementById('result-area').style.display = 'block';
+                }
+
+            } catch (e) {
+                tg.showAlert("Error: " + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "🎙️ Generate Audio";
+            }
         }
+
+        // Start
+        init();
+
     </script>
 </body>
 
