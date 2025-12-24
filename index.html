@@ -381,7 +381,7 @@
 
             <div id="result-area">
                 <p style="color: #e8c170; margin-bottom: 10px; font-size: 14px;">✨ Audio Generated Successfully!</p>
-                <audio id="audio-player" controls class="audio-player"></audio>
+                <audio id="audio-player" controls class="audio-player" crossorigin="anonymous"></audio>
                 <a id="download-btn" class="download-link" href="#" download="darja_voice.mp3">Download MP3</a>
             </div>
         </div>
@@ -462,6 +462,7 @@
                 const audioUrl = data.url;
 
                 audioPlayer.src = audioUrl;
+                audioPlayer.load(); // Force the player to load the new source
 
                 // Update download button to use Telegram's openLink
                 downloadBtn.onclick = (e) => {
