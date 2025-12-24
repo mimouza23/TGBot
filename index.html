@@ -370,6 +370,9 @@
             </div>
 
             <button id="generate-btn" class="btn-generate">🎙️ Generate Voice Note</button>
+            <button id="test-btn"
+                style="background: none; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.5); margin-top: 10px; padding: 5px; border-radius: 5px; font-size: 10px; cursor: pointer;">Test
+                Connection</button>
 
             <div id="result-area">
                 <p style="color: #e8c170; margin-bottom: 10px; font-size: 14px;">✨ Audio Generated Successfully!</p>
@@ -406,6 +409,7 @@
 
         // Logic
         const generateBtn = document.getElementById('generate-btn');
+        const testBtn = document.getElementById('test-btn');
         const resultArea = document.getElementById('result-area');
         const audioPlayer = document.getElementById('audio-player');
         const downloadBtn = document.getElementById('download-btn');
@@ -417,11 +421,17 @@
         // If running locally with no tunnel, this won't work from Netlify.
         const BACKEND_URL = "https://fcf7941807c8.ngrok-free.app";
 
-        const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
+        let AdController;
+        try {
+            AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
+        } catch (e) {
+            console.error("Adsgram init failed", e);
+        }
 
         async function generateAudio(text) {
             generateBtn.disabled = true;
             generateBtn.innerText = "Generating...";
+            console.log("Starting fetch to:", `${BACKEND_URL}/generate`);
 
             try {
                 const response = await fetch(`${BACKEND_URL}/generate`, {
@@ -451,7 +461,7 @@
                 saveToHistory(text);
 
             } catch (e) {
-                alert("Error generating audio: " + e.message);
+                alert("Fetch Error: " + e.message);
                 generateBtn.innerText = "🎙️ Generate Voice Note";
             } finally {
                 generateBtn.disabled = false;
@@ -465,17 +475,33 @@
                 return;
             }
 
+            if (!AdController) {
+                alert("Ad SDK not loaded. Trying direct generation...");
+                generateAudio(text);
+                return;
+            }
+
             // Show Ad
             AdController.show().then((result) => {
                 // User watched ad
                 generateAudio(text);
             }).catch((result) => {
                 // Ad failed or skipped
-                console.warn("Ad skipped/failed:", result);
+                alert("Ad failed/skipped. Generating anyway...");
                 // For better UX during dev/testing, we allow generation. 
                 // In production, you might want to block it.
                 generateAudio(text);
             });
+        });
+
+        testBtn.addEventListener('click', async () => {
+            alert("Testing connection to: " + BACKEND_URL);
+            try {
+                const res = await fetch(BACKEND_URL + "/generate", { method: 'OPTIONS' });
+                alert("Connection Success! Status: " + res.status);
+            } catch (e) {
+                alert("Connection Failed: " + e.message);
+            }
         });
 
         function saveToHistory(text) {
