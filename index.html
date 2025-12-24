@@ -132,7 +132,7 @@
         }
 
         .glass-panel {
-            background: rgba(20, 20, 25, 0.4);
+            background: rgba(20, 20, 25, 0.2);
             /* More transparent */
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
@@ -458,16 +458,19 @@
                     throw new Error(errText || "Generation failed");
                 }
 
-                const blob = await response.blob();
-                const url = URL.createObjectURL(blob);
+                const data = await response.json();
+                const audioUrl = data.url;
 
-                audioPlayer.src = url;
-                downloadBtn.href = url;
+                audioPlayer.src = audioUrl;
+
+                // Update download button to use Telegram's openLink
+                downloadBtn.onclick = (e) => {
+                    e.preventDefault();
+                    tg.openLink(audioUrl);
+                };
 
                 resultArea.style.display = 'block';
                 generateBtn.innerText = "🎙️ Generate Another";
-
-                // Save to history (localStorage)
                 saveToHistory(text);
 
             } catch (e) {
