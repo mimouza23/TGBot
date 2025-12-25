@@ -510,7 +510,7 @@
 
             <div id="result-area">
                 <p style="color: #e8c170; margin-bottom: 10px;">✨ Generated!</p>
-                <audio id="audio-player" controls class="audio-player"></audio>
+                <audio id="audio-player" controls class="audio-player" playsinline></audio>
             </div>
         </div>
     </div>
@@ -834,19 +834,24 @@
 
                     const audioPlayer = document.getElementById('audio-player');
 
-                    // Fetch audio as blob to bypass ngrok warning
-                    try {
-                        const audioRes = await fetch(data.url, {
-                            headers: { 'ngrok-skip-browser-warning': 'true' }
-                        });
-                        const audioBlob = await audioRes.blob();
-                        // Force audio/mpeg type for better compatibility
-                        const typedBlob = new Blob([audioBlob], { type: 'audio/mpeg' });
-                        const blobUrl = URL.createObjectURL(typedBlob);
-                        audioPlayer.src = blobUrl;
-                    } catch (e) {
-                        console.error("Blob fetch failed, falling back to direct URL", e);
-                        audioPlayer.src = data.url;
+                    if (data.audio_base64) {
+                        // Use base64 data URI for maximum compatibility on mobile/Telegram
+                        audioPlayer.src = `data:audio/mpeg;base64,${data.audio_base64}`;
+                    } else {
+                        // Fallback to blob fetch if base64 is missing
+                        try {
+                            const audioRes = await fetch(data.url, {
+                                headers: { 'ngrok-skip-browser-warning': 'true' }
+                            });
+                            if (!audioRes.ok) throw new Error("Fetch failed");
+                            const audioBlob = await audioRes.blob();
+                            const typedBlob = new Blob([audioBlob], { type: 'audio/mpeg' });
+                            const blobUrl = URL.createObjectURL(typedBlob);
+                            audioPlayer.src = blobUrl;
+                        } catch (e) {
+                            console.error("Blob fetch failed, falling back to direct URL", e);
+                            audioPlayer.src = data.url;
+                        }
                     }
 
                     // If tashkeel was auto-generated, update the state
