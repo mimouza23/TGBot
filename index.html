@@ -840,11 +840,20 @@
                             headers: { 'ngrok-skip-browser-warning': 'true' }
                         });
                         const audioBlob = await audioRes.blob();
-                        const blobUrl = URL.createObjectURL(audioBlob);
+                        // Force audio/mpeg type for better compatibility
+                        const typedBlob = new Blob([audioBlob], { type: 'audio/mpeg' });
+                        const blobUrl = URL.createObjectURL(typedBlob);
                         audioPlayer.src = blobUrl;
                     } catch (e) {
                         console.error("Blob fetch failed, falling back to direct URL", e);
                         audioPlayer.src = data.url;
+                    }
+
+                    // If tashkeel was auto-generated, update the state
+                    if (data.tashkeel_text) {
+                        tashkeelText = data.tashkeel_text;
+                        originalText = text; // The text user typed is now the "original"
+                        document.getElementById('user-text').value = tashkeelText;
                     }
 
                     document.getElementById('result-area').style.display = 'block';
