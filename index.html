@@ -596,9 +596,23 @@
                     updateBalanceUI();
 
                     const audioPlayer = document.getElementById('audio-player');
-                    // Fetch blob to bypass ngrok warning if needed
-                    audioPlayer.src = data.url;
+
+                    // Fetch audio as blob to bypass ngrok warning
+                    try {
+                        const audioRes = await fetch(data.url, {
+                            headers: { 'ngrok-skip-browser-warning': 'true' }
+                        });
+                        const audioBlob = await audioRes.blob();
+                        const blobUrl = URL.createObjectURL(audioBlob);
+                        audioPlayer.src = blobUrl;
+                    } catch (e) {
+                        console.error("Blob fetch failed, falling back to direct URL", e);
+                        audioPlayer.src = data.url;
+                    }
+
                     document.getElementById('result-area').style.display = 'block';
+                    audioPlayer.load();
+                    audioPlayer.play().catch(e => console.log("Auto-play blocked"));
                 }
 
             } catch (e) {
