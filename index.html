@@ -437,6 +437,13 @@
 
         // --- INIT ---
         async function init() {
+            // Pre-fill text from URL if provided
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialText = urlParams.get('text');
+            if (initialText) {
+                document.getElementById('user-text').value = decodeURIComponent(initialText);
+            }
+
             // Setup Adsgram
             try {
                 AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
