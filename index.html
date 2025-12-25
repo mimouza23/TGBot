@@ -339,6 +339,106 @@
                 transform: translateY(0);
             }
         }
+
+        /* Tashkeel Region Options */
+        .tashkeel-regions {
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+            animation: fadeIn 0.3s;
+        }
+
+        .tashkeel-regions.active {
+            display: grid;
+        }
+
+        .region-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 8px 4px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Amiri', serif;
+        }
+
+        .region-btn.selected {
+            background: rgba(232, 193, 112, 0.2);
+            border-color: #e8c170;
+            color: #e8c170;
+        }
+
+        /* Custom Popup */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup-content {
+            background: #1f1f23;
+            border: 1px solid #e8c170;
+            border-radius: 20px;
+            padding: 25px;
+            width: 90%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .popup-title {
+            font-size: 20px;
+            color: #e8c170;
+            margin-bottom: 15px;
+        }
+
+        .popup-text {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+        }
+
+        .popup-cost {
+            font-size: 24px;
+            font-weight: 700;
+            color: #e8c170;
+            margin: 10px 0;
+        }
+
+        .popup-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .popup-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-confirm {
+            background: #e8c170;
+            color: #1a1a1d;
+        }
+
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
     </style>
 </head>
 
@@ -382,6 +482,12 @@
                         <span class="slider"></span>
                     </label>
                 </div>
+
+                <div class="tashkeel-regions" id="tashkeel-regions">
+                    <button class="region-btn" data-region="constantine">قسنطيني (شرق)</button>
+                    <button class="region-btn" data-region="algiers">عاصمي</button>
+                    <button class="region-btn" data-region="oran">وهراني (غرب)</button>
+                </div>
             </div>
 
             <button class="pro-settings-header" id="pro-toggle">
@@ -409,12 +515,25 @@
         </div>
     </div>
 
+    <!-- Custom Popup -->
+    <div class="popup-overlay" id="tashkeel-popup">
+        <div class="popup-content">
+            <div class="popup-title">Generate Tashkeel?</div>
+            <div class="popup-text">This will add diacritics to your text using AI.</div>
+            <div class="popup-cost"><span id="popup-cost-val">0</span> <span style="font-size: 14px;">صرف</span></div>
+            <div class="popup-btns">
+                <button class="popup-btn btn-cancel" id="popup-cancel">Cancel</button>
+                <button class="popup-btn btn-confirm" id="popup-confirm">Generate</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
         // --- CONFIG ---
-        const BACKEND_URL = "https://68268931aebc.ngrok-free.app"; // Update this!
+        const BACKEND_URL = "https://6d679ddbfff2.ngrok-free.app"; // Update this!
         const ADSGRAM_BLOCK_ID = "19869";
         const SARF_PER_CHAR = 2;
         const SARF_PER_AD = 100;
@@ -422,6 +541,10 @@
         // --- STATE ---
         let currentBalance = 0;
         let AdController;
+        let originalText = "";
+        let tashkeelText = "";
+        let lastRegion = "algiers";
+        let isGeneratingTashkeel = false;
 
         // --- VOICES ---
         const voices = {
@@ -513,6 +636,111 @@
 
             // Watch Ad
             document.getElementById('earn-sarf-btn').addEventListener('click', watchAd);
+
+            // Tashkeel Toggle
+            const tashkeelToggle = document.getElementById('tashkeel-toggle');
+            const regionsDiv = document.getElementById('tashkeel-regions');
+            const userTextArea = document.getElementById('user-text');
+
+            tashkeelToggle.addEventListener('change', () => {
+                if (tashkeelToggle.checked) {
+                    regionsDiv.classList.add('active');
+                    // If we have previously generated tashkeel, show it
+                    if (tashkeelText) {
+                        originalText = userTextArea.value;
+                        userTextArea.value = tashkeelText;
+                    }
+                    // Select last region
+                    selectRegion(lastRegion);
+                } else {
+                    regionsDiv.classList.remove('active');
+                    // Restore original text if we were showing tashkeel
+                    if (tashkeelText && userTextArea.value === tashkeelText) {
+                        userTextArea.value = originalText;
+                    }
+                }
+            });
+
+            // Region Buttons
+            document.querySelectorAll('.region-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const region = btn.dataset.region;
+                    lastRegion = region;
+                    selectRegion(region);
+                    showTashkeelPopup(region);
+                });
+            });
+
+            // Popup Listeners
+            document.getElementById('popup-cancel').addEventListener('click', () => {
+                document.getElementById('tashkeel-popup').style.display = 'none';
+            });
+
+            document.getElementById('popup-confirm').addEventListener('click', () => {
+                document.getElementById('tashkeel-popup').style.display = 'none';
+                generateTashkeel(lastRegion);
+            });
+        }
+
+        function selectRegion(region) {
+            document.querySelectorAll('.region-btn').forEach(btn => {
+                btn.classList.toggle('selected', btn.dataset.region === region);
+            });
+        }
+
+        function showTashkeelPopup(region) {
+            const text = document.getElementById('user-text').value.trim();
+            if (!text) return tg.showAlert("Please enter text first!");
+
+            const cost = Math.max(2, Math.ceil(text.length / 50) * 2);
+            document.getElementById('popup-cost-val').innerText = cost;
+            document.getElementById('tashkeel-popup').style.display = 'flex';
+        }
+
+        async function generateTashkeel(region) {
+            const userTextArea = document.getElementById('user-text');
+            const text = userTextArea.value.trim();
+            if (!text) return;
+
+            isGeneratingTashkeel = true;
+            const btn = document.querySelector(`.region-btn[data-region="${region}"]`);
+            const oldText = btn.innerText;
+            btn.innerText = "⏳...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/tashkeel`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Telegram-Init-Data': tg.initData,
+                        'ngrok-skip-browser-warning': 'true'
+                    },
+                    body: JSON.stringify({ text, region })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    originalText = text;
+                    tashkeelText = data.tashkeel_text;
+                    userTextArea.value = tashkeelText;
+                    currentBalance = data.new_balance;
+                    updateBalanceUI();
+                    tg.showAlert("Tashkeel Generated! ✨");
+                } else {
+                    if (res.status === 402) {
+                        tg.showAlert(`Insufficient Sarf! Need ${data.required} Sarf.`);
+                    } else {
+                        throw new Error(data.error || "Failed to generate tashkeel");
+                    }
+                }
+            } catch (e) {
+                tg.showAlert("Error: " + e.message);
+            } finally {
+                btn.innerText = oldText;
+                btn.disabled = false;
+                isGeneratingTashkeel = false;
+            }
         }
 
         async function watchAd() {
@@ -575,7 +803,9 @@
                     text: text,
                     provider: document.getElementById('provider-select').value,
                     voice_id: document.getElementById('voice-select').value,
-                    use_tashkeel: document.getElementById('tashkeel-toggle').checked,
+                    // If we've already generated tashkeel and the text hasn't changed, don't do it again
+                    use_tashkeel: document.getElementById('tashkeel-toggle').checked && (text !== tashkeelText),
+                    region: lastRegion,
                     pitch_shift: document.getElementById('pitch-slider').value,
                     rate_shift: (document.getElementById('rate-slider').value > 0 ? "+" : "") + document.getElementById('rate-slider').value + "%"
                 };
