@@ -94,8 +94,8 @@
 
         .glass-panel {
             background: rgba(20, 20, 25, 0.4);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px;
             padding: 25px;
@@ -463,8 +463,8 @@
                 <div class="control-row">
                     <span class="label">Provider</span>
                     <select id="provider-select">
-                        <option value="elevenlabs">ElevenLabs (Premium)</option>
-                        <option value="edge-tts">Edge-TTS (Free)</option>
+                        <option value="elevenlabs">Premium</option>
+                        <option value="edge-tts">Lite</option>
                     </select>
                 </div>
 
@@ -549,12 +549,12 @@
         // --- VOICES ---
         const voices = {
             elevenlabs: [
-                { id: "21m00Tcm4TlvDq8ikWAM", name: "Rachel (Female)" },
-                { id: "ErXwobaYiN019PkySvjV", name: "Antoni (Male)" } // Example ID
+                { id: "OfGMGmhShO8iL9jCkXy8", name: "Female" },
+                { id: "nH7M8bGCLQbKoS0wBZj7", name: "Male" }
             ],
             "edge-tts": [
-                { id: "ar-DZ-IsmaelNeural", name: "Ismael (Male)" },
-                { id: "ar-DZ-AminaNeural", name: "Amina (Female)" } // Hypothetical, usually standard Arabic voices used or closest match
+                { id: "ar-DZ-IsmaelNeural", name: "Male" },
+                { id: "ar-DZ-AminaNeural", name: "Female" }
             ]
         };
 
@@ -783,7 +783,9 @@
             const text = document.getElementById('user-text').value.trim();
             if (!text) return tg.showAlert("Please enter text!");
 
-            const cost = text.length * SARF_PER_CHAR;
+            const provider = document.getElementById('provider-select').value;
+            const sarfPerChar = provider === 'elevenlabs' ? SARF_PER_CHAR : SARF_PER_CHAR / 2;
+            const cost = text.length * sarfPerChar;
             if (currentBalance < cost) {
                 const needed = cost - currentBalance;
                 const adsNeeded = Math.ceil(needed / SARF_PER_AD);
